@@ -1,34 +1,19 @@
-name: Cache Demo Workflow
+name: Cache Demo with Secret Test
 
 on:
-  workflow_dispatch: # manual trigger
-  push:
-    branches: [ main ]
+  workflow_dispatch:
 
 jobs:
-  build:
+  test-secret:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: prime-cache-d171815
-        id: cache-step
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/pip
-          key: cache-d171815
-          restore-keys: |
-            cache-d171815
-
-      - name: Display cache result
-        run: echo "Cache hit? ${{ steps.cache-step.outputs.cache-hit }}"
-
-      - name: Install dependencies
+      - name: Use secret safely
+        env:
+          API_KEY: ${{ secrets.MY_API_KEY }}
         run: |
-          python -m pip install --upgrade pip
-          pip install requests
-
-      - name: Test run
-        run: python -c "import requests; print('Cache workflow ran successfully')"
+          echo "Secret is set!"
+          echo "Secret length: ${#API_KEY}"
